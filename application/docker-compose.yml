@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  zookeeper:
+    image: 'bitnami/zookeeper'
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    image: 'bitnami/kafka'
+    ports:
+      - '9092:9092'
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper
+  keywords:
+    build: ../keyword-generator
+    depends_on:
+      - kafka
+  websearch:
+    build: ../websearch
+    depends_on:
+      - kafka
+      - keywords
